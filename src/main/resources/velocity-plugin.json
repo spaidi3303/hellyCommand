@@ -1,0 +1,13 @@
+{
+  "id": "hellycommand",
+  "name": "HellyCommand",
+  "version": "1.0",
+  "main": "sammy.hellyCommand.HellyCommand",
+  "authors": ["sammy"],
+  "entrypoints": {
+    "main": [
+      "sammy.hellyCommand.HellyCommand"
+    ]
+  },
+  "depends": []
+}
