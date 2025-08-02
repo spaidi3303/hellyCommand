@@ -16,10 +16,16 @@ import sammy.hellyCommand.Listeners.PlayerJoinListener;
 @Plugin(id = "sammy", name = "hellyCommand", version = "1.0")
 public class HellyCommand {
 
+
     @Inject
     private Logger logger;
     @Inject
-    private ProxyServer server;
+    private final ProxyServer server;
+
+    @Inject
+    public HellyCommand(ProxyServer server) {
+        this.server = server;
+    }
 
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event) {
@@ -40,7 +46,7 @@ public class HellyCommand {
                 new Stp(server)
         );
 
-        server.getEventManager().register(this, new PlayerJoinListener(server));
+        server.getEventManager().register(this, new PlayerJoinListener(this, server));
         server.getChannelRegistrar().register(SendData.CHANNEL);
     }
 

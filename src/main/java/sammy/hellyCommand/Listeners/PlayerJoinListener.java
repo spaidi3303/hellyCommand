@@ -11,6 +11,7 @@ import com.velocitypowered.api.proxy.InboundConnection;
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.Component;
 import sammy.hellyCommand.Bans.Db_ban;
+import sammy.hellyCommand.HellyCommand;
 import sammy.hellyCommand.Utils;
 
 import javax.inject.Inject;
@@ -20,11 +21,11 @@ import java.time.Instant;
 import java.util.Date;
 
 public class PlayerJoinListener {
-
+    private final Object plugin;       // <-- это и будет плагин
     private final ProxyServer server;
 
-    @Inject
-    public PlayerJoinListener(ProxyServer server) {
+    public PlayerJoinListener(Object plugin, ProxyServer server) {
+        this.plugin = plugin;
         this.server = server;
     }
 
@@ -32,7 +33,7 @@ public class PlayerJoinListener {
     public void onPlayerLogin(PreLoginEvent event) {
         InboundConnection connection =  event.getConnection();
         String playerName = event.getUsername();
-        server.getScheduler().buildTask(server, () -> {
+        server.getScheduler().buildTask(plugin, () -> {
             try (Db_ban db = new Db_ban(playerName, server)) {
                 if (db.ifUserExists()) {
                     String bans = db.getBans();
