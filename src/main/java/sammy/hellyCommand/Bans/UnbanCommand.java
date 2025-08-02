@@ -4,14 +4,17 @@ import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.Component;
+import org.slf4j.Logger;
 import sammy.hellyCommand.Utils;
 
 public class UnbanCommand implements SimpleCommand {
 
     private final ProxyServer proxy;
+    private final Logger logger;
 
-    public UnbanCommand(ProxyServer proxy) {
+    public UnbanCommand(ProxyServer proxy, Logger logger) {
         this.proxy = proxy;
+        this.logger = logger;
     }
 
     @Override
@@ -25,7 +28,7 @@ public class UnbanCommand implements SimpleCommand {
 
         String targetName = args[0];
 
-        try (Db_ban db = new Db_ban(targetName, proxy)) {
+        try (Db_ban db = new Db_ban(targetName, proxy, logger)) {
             if (!(invocation.source() instanceof Player player)) {
                 invocation.source().sendMessage(Component.text("Все баны игрока " + targetName + " были сняты."));
                 db.unBanAll();

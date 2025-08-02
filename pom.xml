@@ -41,6 +41,11 @@
                                 <goals>
                                     <goal>shade</goal>
                                 </goals>
+                                <configuration>
+                                    <createDependencyReducedPom>true</createDependencyReducedPom>
+                                    <shadedArtifactAttached>false</shadedArtifactAttached> <!-- НЕ создавать отдельный -shaded.jar -->
+                                    <finalName>${project.artifactId}-${project.version}</finalName> <!-- имя без суффикса -->
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>
@@ -54,6 +59,7 @@
             </build>
         </profile>
     </profiles>
+
 
     <build>
         <defaultGoal>clean package</defaultGoal>
@@ -153,5 +159,11 @@
             <artifactId>jackson-databind</artifactId>
             <version>2.19.2</version>
         </dependency>
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <version>9.4.0</version>
+        </dependency>
+
     </dependencies>
 </project>

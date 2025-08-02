@@ -11,12 +11,15 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.velocitypowered.api.proxy.ProxyServer;
+import org.slf4j.Logger;
 
 public class Db_ban extends Db_abstract{
+    Logger logger;
     ProxyServer server;
-    public Db_ban(String name, ProxyServer server) {
+    public Db_ban(String name, ProxyServer server, Logger logger) {
         super(name);
         this.server = server;
+        this.logger = logger;
     }
 
     @Override
@@ -27,7 +30,7 @@ public class Db_ban extends Db_abstract{
             stmt.executeUpdate(sql);
         } catch (SQLException e) {
             System.out.println("Ошибка при создании таблицы:");
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
     }
     public void addBan(String admin, String reason, String unBanDate){
@@ -59,7 +62,7 @@ public class Db_ban extends Db_abstract{
 
             } catch (SQLException e) {
                 System.out.println("Ошибка при добавлении пользователя:");
-                e.printStackTrace();
+                logger.error(e.getMessage());
             }
         }
         else {
@@ -70,7 +73,7 @@ public class Db_ban extends Db_abstract{
                 stmt.executeUpdate();
             } catch (SQLException e) {
                 System.out.println("Ошибка при обновлении пользователя:");
-                e.printStackTrace();
+                logger.error(e.getMessage());
             }
         }
 
@@ -90,7 +93,7 @@ public class Db_ban extends Db_abstract{
             }
         } catch (SQLException e) {
             System.out.println("Ошибка при чтении данных о донате пользователя:");
-            e.printStackTrace();
+            logger.error(e.getMessage());
             return null;
         }
     }
@@ -103,7 +106,7 @@ public class Db_ban extends Db_abstract{
 
         } catch (SQLException e) {
             System.out.println("Ошибка при разбане пользователя:");
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
     }
     public void unban(String admin) {
@@ -144,11 +147,11 @@ public class Db_ban extends Db_abstract{
                 stmt.executeUpdate();
             } catch (SQLException e) {
                 System.out.println("Ошибка при обновлении пользователя:");
-                e.printStackTrace();
+                logger.error(e.getMessage());
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
             System.out.println("Ошибка при обработке списка банов.");
         }
     }
@@ -169,7 +172,7 @@ public class Db_ban extends Db_abstract{
             }
         } catch (SQLException e) {
             System.out.println("Ошибка при проверке существования пользователя:");
-            e.printStackTrace();
+            logger.error(e.getMessage());
             return false;
         }
     }
@@ -190,7 +193,7 @@ public class Db_ban extends Db_abstract{
         } catch (SQLException e) {
             System.out.println("Ошибка при удалении бана:");
             //noinspection CallToPrintStackTrace
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
     }
 }

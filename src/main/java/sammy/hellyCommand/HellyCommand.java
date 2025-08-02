@@ -1,7 +1,9 @@
 package sammy.hellyCommand;
 
 import com.google.inject.Inject;
+import com.mysql.cj.log.Log;
 import com.velocitypowered.api.command.CommandMeta;
+import com.velocitypowered.api.event.connection.PreLoginEvent;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.plugin.Plugin;
@@ -28,14 +30,19 @@ public class HellyCommand {
     }
 
     @Subscribe
+    public Logger getLogger(){
+        return logger;
+    }
+
+    @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event) {
         server.getCommandManager().register(
                 server.getCommandManager().metaBuilder("ban").build(),
-                new BanCommand(server)
+                new BanCommand(server, logger)
         );
         server.getCommandManager().register(
                 server.getCommandManager().metaBuilder("unban").build(),
-                new UnbanCommand(server)
+                new UnbanCommand(server, logger)
         );
         server.getCommandManager().register(
                 server.getCommandManager().metaBuilder("etp").build(),
@@ -46,8 +53,10 @@ public class HellyCommand {
                 new Stp(server)
         );
 
-        server.getEventManager().register(this, new PlayerJoinListener(this, server));
         server.getChannelRegistrar().register(SendData.CHANNEL);
+        server.getEventManager().register(this, new PlayerJoinListener(this, server, logger));
+
     }
+
 
 }

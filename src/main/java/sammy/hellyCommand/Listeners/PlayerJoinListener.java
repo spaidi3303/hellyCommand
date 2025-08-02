@@ -19,14 +19,17 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.time.Instant;
 import java.util.Date;
+import org.slf4j.Logger;
 
 public class PlayerJoinListener {
-    private final Object plugin;       // <-- это и будет плагин
+    private final Object plugin;
+    private final Logger logger;
     private final ProxyServer server;
 
-    public PlayerJoinListener(Object plugin, ProxyServer server) {
+    public PlayerJoinListener(Object plugin, ProxyServer server, Logger logger) {
         this.plugin = plugin;
         this.server = server;
+        this.logger = logger;
     }
 
     @Subscribe
@@ -34,11 +37,10 @@ public class PlayerJoinListener {
         InboundConnection connection =  event.getConnection();
         String playerName = event.getUsername();
         server.getScheduler().buildTask(plugin, () -> {
-            try (Db_ban db = new Db_ban(playerName, server)) {
+            try (Db_ban db = new Db_ban(playerName, server, logger)) {
                 if (db.ifUserExists()) {
                     String bans = db.getBans();
-                    parsin(bans, playerName, server);
-
+                    parsing(bans, playerName, server);
                     if (db.ifUserExists()) {
                         String[] banInfo = getFirstBan(db.getBans());
                         if (banInfo == null) return;
@@ -54,12 +56,13 @@ public class PlayerJoinListener {
                     }
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error(e.getMessage());
             }
         }).schedule();
+
     }
 
-    public static String[] getFirstBan(String bansJson) {
+    public String[] getFirstBan(String bansJson) {
         ObjectMapper mapper = new ObjectMapper();
         try {
             ArrayNode root = (ArrayNode) mapper.readTree(bansJson);
@@ -70,13 +73,13 @@ public class PlayerJoinListener {
 
             return new String[]{admin, reason, date};
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
             return null;
         }
     }
 
 
-    public static void parsin(String bans, String playerName, ProxyServer server) {
+    public void parsing(String bans, String playerName, ProxyServer server) {
         if (bans == null) return;
 
         ObjectMapper mapper = new ObjectMapper();
@@ -94,12 +97,12 @@ public class PlayerJoinListener {
             }
 
             if (modified) {
-                try (Db_ban db = new Db_ban(playerName, server)) {
+                try (Db_ban db = new Db_ban(playerName, server, logger)) {
                     db.delBanLater(rootArray);
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
     }
 

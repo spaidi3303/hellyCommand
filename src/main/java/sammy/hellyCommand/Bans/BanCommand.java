@@ -4,6 +4,7 @@ import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.Component;
+import org.slf4j.Logger;
 
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -17,9 +18,11 @@ import static sammy.hellyCommand.Utils.reform;
 public class BanCommand implements SimpleCommand {
 
     private final ProxyServer proxy;
-
-    public BanCommand(ProxyServer proxy) {
+    private final Logger logger;
+    public BanCommand(ProxyServer proxy, Logger logger) {
         this.proxy = proxy;
+        this.logger = logger;
+
     }
 
     @Override
@@ -52,7 +55,7 @@ public class BanCommand implements SimpleCommand {
         Date unbanDate = Date.from(instant);
         String dateString = instant.toString();
 
-        try (Db_ban db = new Db_ban(targetName, proxy)) {
+        try (Db_ban db = new Db_ban(targetName, proxy, logger)) {
             db.addBan(sender.getUsername(), reason, dateString);
         }
 
